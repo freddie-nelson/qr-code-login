@@ -1,24 +1,24 @@
-const API_URL = import.meta.env.VITE_API_URL;
+export const API_URL =
+  process.env.NODE_ENV === "production"
+    ? import.meta.env.VITE_API_URL
+    : `${location.protocol}//${location.hostname}:3000`;
 if (!API_URL) {
   throw new Error("VITE_API_URL must be defined in .env");
 }
 
-export interface ApiResponse<T> {
-  success: boolean;
-  data: any;
-}
-
-export interface ApiError<T> extends ApiResponse<T> {
+export interface ApiError {
   success: false;
   data: {
     error: string;
   };
 }
 
-export interface ApiSuccess<T> extends ApiResponse<T> {
+export interface ApiSuccess<T> {
   success: true;
   data: T;
 }
+
+export type ApiResponse<T> = ApiError | ApiSuccess<T>;
 
 /**
  * Make a request to the API.
@@ -29,8 +29,18 @@ export interface ApiSuccess<T> extends ApiResponse<T> {
  *
  * @returns The fetch response
  */
-export async function useApi<T>(route: string, method: string, body: Object): Promise<ApiResponse<T>> {
-  const url = `${API_URL}${route}`;
+export async function useApi<T>(
+  route: string,
+  method: string,
+  body: { [index: string]: any }
+): Promise<ApiResponse<T>> {
+  const url = new URL(`${API_URL}${route}`);
+
+  if (method === "GET") {
+    for (const key in body) {
+      url.searchParams.append(key, String(body[key]));
+    }
+  }
 
   try {
     const res = await fetch(url, {
@@ -38,7 +48,8 @@ export async function useApi<T>(route: string, method: string, body: Object): Pr
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      credentials: "include",
+      body: method === "POST" ? JSON.stringify(body) : undefined,
     });
 
     if (!res.ok) {

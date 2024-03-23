@@ -22,12 +22,12 @@ const controller: RequestHandler = async (req, res) => {
     });
 
     if (exists.length > 0) {
-      res.status(409).send("The provided email or username is already taken.");
+      res.status(409).send("The provided username is already taken.");
       return;
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send("Could not determine if username or email is already taken.");
+    res.status(500).send("Could not determine if username is already taken.");
     return;
   }
 
@@ -45,7 +45,10 @@ const controller: RequestHandler = async (req, res) => {
     return;
   }
 
-  res.status(200).send("Account created successfully.");
+  res.status(200).json({
+    username: info.username,
+    isAdmin: false,
+  });
 };
 
 export default <Route>{

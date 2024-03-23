@@ -8,6 +8,7 @@ import Register from "./views/Register.tsx";
 
 import "./css/index.scss";
 import LoginQR from "./views/LoginQR.tsx";
+import Admin from "./views/Admin.tsx";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/login-qr",
     element: <LoginQR />,
+  },
+  {
+    path: "/admin",
+    element: <Admin />,
   },
 ]);
 

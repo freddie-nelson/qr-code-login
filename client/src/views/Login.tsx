@@ -6,8 +6,11 @@ import Label from "../components/shared/Label";
 import InputPassword from "../components/shared/InputPassword";
 import { login } from "../api/auth";
 import FormMessage, { FormMessageProps } from "../components/shared/FormMessage";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [formStatus, setFormStatus] = useState<{ purpose: FormMessageProps["purpose"]; message: string }>({
@@ -21,6 +24,7 @@ function Login() {
     const res = await login(username, password);
     if (res.success) {
       setFormStatus({ purpose: "success", message: "Login successful." });
+      navigate("/");
     } else {
       setFormStatus({ purpose: "error", message: res.data.error });
     }

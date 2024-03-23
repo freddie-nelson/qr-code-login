@@ -5,6 +5,7 @@ import { prisma } from "@/db/client";
 import { User } from ".prisma/client";
 import { compare } from "bcryptjs";
 import * as jwt from "jsonwebtoken";
+import { useJWT } from "@/hooks/useJWT";
 
 const controller: RequestHandler = async (req, res) => {
   const parsedBody = loginUserSchema.safeParse(req.body);
@@ -37,23 +38,10 @@ const controller: RequestHandler = async (req, res) => {
     return;
   }
 
-  // create jwt and cookie
-  if (!process.env.JWT_SECRET) {
-    console.log("Error: JWT_SECRET env variable missing.");
-    res.status(500).send("Could not create authentication token.");
+  const success = useJWT(user.id, user.username, res);
+  if (!success) {
     return;
   }
-
-  const daysToExpire = 60;
-  const token = jwt.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET, {
-    expiresIn: daysToExpire * 24 * 60 * 60,
-  });
-  res.cookie("token", token, {
-    expires: new Date(Date.now() + daysToExpire * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-    // secure: process.env.NODE_ENV === "production",
-    secure: false,
-  });
 
   // successful login
   res.status(200).json({
