@@ -4,14 +4,26 @@ import InputText from "../components/shared/InputText";
 import Button from "../components/shared/Button";
 import Label from "../components/shared/Label";
 import InputPassword from "../components/shared/InputPassword";
+import { login } from "../api/auth";
+import FormMessage, { FormMessageProps } from "../components/shared/FormMessage";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [formStatus, setFormStatus] = useState<{ purpose: FormMessageProps["purpose"]; message: string }>({
+    purpose: "neutral",
+    message: "",
+  });
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("submit");
+
+    const res = await login(username, password);
+    if (res.success) {
+      setFormStatus({ purpose: "success", message: "Login successful." });
+    } else {
+      setFormStatus({ purpose: "error", message: res.data.error });
+    }
   };
 
   return (
@@ -20,8 +32,11 @@ function Login() {
         <h1 className="w-full text-center text-4xl font-bold mb-4">Login</h1>
 
         <div className="flex flex-col gap-1">
-          <Label htmlFor="username">username</Label>
+          <Label required htmlFor="username">
+            username
+          </Label>
           <InputText
+            required
             name="username"
             type="text"
             value={username}
@@ -31,14 +46,21 @@ function Login() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <Label htmlFor="password">password</Label>
+          <Label required htmlFor="password">
+            password
+          </Label>
           <InputPassword
+            required
             name="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="password..."
           />
         </div>
+
+        {formStatus.message !== "" && (
+          <FormMessage purpose={formStatus.purpose}>{formStatus.message}</FormMessage>
+        )}
 
         <Button type="submit" purpose="neutral" className="h-14">
           Login
