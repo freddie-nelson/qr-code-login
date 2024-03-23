@@ -103,7 +103,7 @@ function Admin() {
         </div>
 
         {/* users list */}
-        <div className="h-72 w-full overflow-y-scroll pr-4 mt-4 max-w-3xl">
+        <div className="h-72 w-full overflow-y-scroll pr-4 mt-4 max-w-3xl flex flex-col gap-2">
           {users.map((user) => (
             <button
               type="button"

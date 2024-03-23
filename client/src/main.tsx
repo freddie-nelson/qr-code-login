@@ -9,6 +9,7 @@ import Register from "./views/Register.tsx";
 import "./css/index.scss";
 import LoginQR from "./views/LoginQR.tsx";
 import Admin from "./views/Admin.tsx";
+import Logout from "./views/Logout.tsx";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: <Admin />,
+  },
+  {
+    path: "/logout",
+    element: <Logout />,
   },
 ]);
 
